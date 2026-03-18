@@ -6,25 +6,39 @@ apiVersion: v1
 kind: Pod
 spec:
   serviceAccountName: jenkins
+  initContainers:
+    - name: ecr-login
+      image: amazon/aws-cli:latest
+      command:
+        - /bin/sh
+        - -c
+        - |
+          TOKEN=$(aws ecr get-login-password --region us-west-2)
+          AUTH=$(echo -n "AWS:${TOKEN}" | base64 | tr -d '\n')
+          cat > /ecr-config/config.json <<EOF
+          {"auths":{"341738837637.dkr.ecr.us-west-2.amazonaws.com":{"auth":"${AUTH}"}}}
+          EOF
+      volumeMounts:
+        - name: docker-config
+          mountPath: /ecr-config
   containers:
     - name: kaniko-backend
       image: gcr.io/kaniko-project/executor:debug
       command: ["cat"]
       tty: true
-      env:
-        - name: AWS_SDK_LOAD_CONFIG
-          value: "true"
-        - name: AWS_REGION
-          value: us-west-2
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
     - name: kaniko-frontend
       image: gcr.io/kaniko-project/executor:debug
       command: ["cat"]
       tty: true
-      env:
-        - name: AWS_SDK_LOAD_CONFIG
-          value: "true"
-        - name: AWS_REGION
-          value: us-west-2
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-config
+      emptyDir: {}
 '''
         }
     }
