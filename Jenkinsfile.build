@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yaml '''
+            yaml """
 apiVersion: v1
 kind: Pod
 spec:
@@ -9,15 +9,12 @@ spec:
   initContainers:
     - name: ecr-login
       image: amazon/aws-cli:latest
-      command:
-        - /bin/sh
-        - -c
+      command: ["/bin/sh", "-c"]
+      args:
         - |
-          TOKEN=$(aws ecr get-login-password --region us-west-2)
-          AUTH=$(echo -n "AWS:${TOKEN}" | base64 | tr -d '\n')
-          cat > /ecr-config/config.json <<EOF
-          {"auths":{"341738837637.dkr.ecr.us-west-2.amazonaws.com":{"auth":"${AUTH}"}}}
-          EOF
+          TOKEN=\$(aws ecr get-login-password --region us-west-2)
+          AUTH=\$(echo -n "AWS:\${TOKEN}" | base64 | tr -d '\\n')
+          echo '{"auths":{"341738837637.dkr.ecr.us-west-2.amazonaws.com":{"auth":"'\${AUTH}'"}}}' > /ecr-config/config.json
       volumeMounts:
         - name: docker-config
           mountPath: /ecr-config
@@ -39,7 +36,7 @@ spec:
   volumes:
     - name: docker-config
       emptyDir: {}
-'''
+"""
         }
     }
 
@@ -54,33 +51,30 @@ spec:
             }
         }
 
-        stage('Build & Push Images') {
-            parallel {
-                stage('Backend Image') {
-                    steps {
-                        container('kaniko-backend') {
-                            sh """
-                                /kaniko/executor \
-                                  --context=dir://\${WORKSPACE}/backend \
-                                  --dockerfile=\${WORKSPACE}/backend/Dockerfile \
-                                  --destination=\${ECR_REPO}:backend-latest \
-                                  --cache=true
-                            """
-                        }
-                    }
+        stage('Build Backend Image') {
+            steps {
+                container('kaniko-backend') {
+                    sh """
+                        /kaniko/executor \
+                          --context=dir://\${WORKSPACE}/backend \
+                          --dockerfile=\${WORKSPACE}/backend/Dockerfile \
+                          --destination=\${ECR_REPO}:backend-latest \
+                          --cache=true
+                    """
                 }
-                stage('Frontend Image') {
-                    steps {
-                        container('kaniko-frontend') {
-                            sh """
-                                /kaniko/executor \
-                                  --context=dir://\${WORKSPACE}/frontend \
-                                  --dockerfile=\${WORKSPACE}/frontend/Dockerfile \
-                                  --destination=\${ECR_REPO}:frontend-latest \
-                                  --cache=true
-                            """
-                        }
-                    }
+            }
+        }
+
+        stage('Build Frontend Image') {
+            steps {
+                container('kaniko-frontend') {
+                    sh """
+                        /kaniko/executor \
+                          --context=dir://\${WORKSPACE}/frontend \
+                          --dockerfile=\${WORKSPACE}/frontend/Dockerfile \
+                          --destination=\${ECR_REPO}:frontend-latest \
+                          --cache=true
+                    """
                 }
             }
         }
