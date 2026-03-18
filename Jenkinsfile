@@ -29,7 +29,7 @@ spec:
         stage('Deploy Backend') {
             steps {
                 container('helm') {
-                    sh 'helm upgrade --install backend ./helm/backend -n default -f helm/backend/values.yaml'
+                    sh 'helm upgrade --install backend ./helm/backend -n default -f helm/backend/values.yaml --force'
                 }
                 container('kubectl') {
                     sh 'kubectl rollout status deployment/backend -n default --timeout=120s'
