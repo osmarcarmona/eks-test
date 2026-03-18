@@ -44,8 +44,8 @@ export class EksStack extends cdk.Stack {
     const cfnNodeGroup = nodeGroup.node.defaultChild as cdk.CfnResource;
     cfnNodeGroup.addPropertyOverride('AmiType', 'AL2023_x86_64_STANDARD');
 
-    // Grant ECR pull permissions to the node group
-    props.repository.grantPull(nodeGroup.role);
+    // Grant ECR pull/push permissions to the node group
+    props.repository.grantPullPush(nodeGroup.role);
 
     // EBS CSI Driver for PersistentVolume support
     const ebsCsiRole = new iam.Role(this, 'EbsCsiDriverRole', {

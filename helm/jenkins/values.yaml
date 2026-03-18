@@ -18,8 +18,24 @@ controller:
 
   JCasC:
     configScripts:
-      pipeline-job: |
+      pipeline-jobs: |
         jobs:
+          - script: >
+              pipelineJob('build-images') {
+                definition {
+                  cpsScm {
+                    scm {
+                      git {
+                        remote {
+                          url('https://github.com/osmarcarmona/eks-test.git')
+                        }
+                        branches('main')
+                      }
+                    }
+                    scriptPath('Jenkinsfile.build')
+                  }
+                }
+              }
           - script: >
               pipelineJob('deploy-app') {
                 definition {

@@ -1,0 +1,74 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  serviceAccountName: jenkins
+  containers:
+    - name: kaniko-backend
+      image: gcr.io/kaniko-project/executor:debug
+      command: ["cat"]
+      tty: true
+      env:
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "true"
+        - name: AWS_REGION
+          value: us-west-2
+    - name: kaniko-frontend
+      image: gcr.io/kaniko-project/executor:debug
+      command: ["cat"]
+      tty: true
+      env:
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "true"
+        - name: AWS_REGION
+          value: us-west-2
+'''
+        }
+    }
+
+    environment {
+        ECR_REPO = '341738837637.dkr.ecr.us-west-2.amazonaws.com/app'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/osmarcarmona/eks-test.git'
+            }
+        }
+
+        stage('Build & Push Images') {
+            parallel {
+                stage('Backend Image') {
+                    steps {
+                        container('kaniko-backend') {
+                            sh """
+                                /kaniko/executor \
+                                  --context=dir://\${WORKSPACE}/backend \
+                                  --dockerfile=\${WORKSPACE}/backend/Dockerfile \
+                                  --destination=\${ECR_REPO}:backend-latest \
+                                  --cache=true
+                            """
+                        }
+                    }
+                }
+                stage('Frontend Image') {
+                    steps {
+                        container('kaniko-frontend') {
+                            sh """
+                                /kaniko/executor \
+                                  --context=dir://\${WORKSPACE}/frontend \
+                                  --dockerfile=\${WORKSPACE}/frontend/Dockerfile \
+                                  --destination=\${ECR_REPO}:frontend-latest \
+                                  --cache=true
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
