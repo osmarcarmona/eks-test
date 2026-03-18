@@ -74,6 +74,25 @@ export class EksStack extends cdk.Stack {
       serviceAccountRoleArn: ebsCsiRole.roleArn,
     });
 
+    // IRSA: IAM Role for Jenkins Service Account (ECR push)
+    const jenkinsRole = new iam.Role(this, 'JenkinsRole', {
+      assumedBy: new iam.FederatedPrincipal(
+        this.cluster.openIdConnectProvider.openIdConnectProviderArn,
+        {
+          StringEquals: new cdk.CfnJson(this, 'JenkinsOidcCondition', {
+            value: {
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]:
+                'system:serviceaccount:jenkins:jenkins',
+              [`${this.cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]:
+                'sts.amazonaws.com',
+            },
+          }),
+        },
+        'sts:AssumeRoleWithWebIdentity',
+      ),
+    });
+    props.repository.grantPullPush(jenkinsRole);
+
     // IRSA: IAM Role for Backend Service Account
     const backendSa = this.cluster.addServiceAccount('BackendServiceAccount', {
       name: 'backend-sa',
@@ -92,6 +111,11 @@ export class EksStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'BackendServiceAccountRoleArn', {
       value: backendSa.role.roleArn,
       description: 'IAM Role ARN for the backend Kubernetes service account (IRSA)',
+    });
+
+    new cdk.CfnOutput(this, 'JenkinsRoleArn', {
+      value: jenkinsRole.roleArn,
+      description: 'IAM Role ARN for the Jenkins service account (IRSA)',
     });
 
     new cdk.CfnOutput(this, 'ClusterName', {

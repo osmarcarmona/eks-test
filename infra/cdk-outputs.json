@@ -15,6 +15,7 @@
     "RepoUri": "341738837637.dkr.ecr.us-west-2.amazonaws.com/app"
   },
   "EksStack": {
+    "JenkinsRoleArn": "arn:aws:iam::341738837637:role/EksStack-JenkinsRoleACE0E219-Hlexnqy6FUPX",
     "BackendServiceAccountRoleArn": "arn:aws:iam::341738837637:role/EksStack-EksClusterBackendServiceAccountRoleBBC4889-zAcuPsNg22AL",
     "ClusterName": "EksClusterFAB68BDB-d4b5c6b47ea64e36bcde49b817d5661e",
     "KubeconfigCommand": "aws eks update-kubeconfig --name EksClusterFAB68BDB-d4b5c6b47ea64e36bcde49b817d5661e --region us-west-2"
