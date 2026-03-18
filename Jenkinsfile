@@ -7,12 +7,8 @@ kind: Pod
 spec:
   serviceAccountName: jenkins
   containers:
-    - name: helm
-      image: alpine/helm:latest
-      command: ["cat"]
-      tty: true
-    - name: kubectl
-      image: bitnami/kubectl:latest
+    - name: deploy
+      image: alpine:latest
       command: ["cat"]
       tty: true
 '''
@@ -26,12 +22,22 @@ spec:
             }
         }
 
+        stage('Install Tools') {
+            steps {
+                container('deploy') {
+                    sh '''
+                        apk add --no-cache curl bash
+                        curl -fsSL https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm
+                        curl -fsSLO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/
+                    '''
+                }
+            }
+        }
+
         stage('Deploy Backend') {
             steps {
-                container('helm') {
+                container('deploy') {
                     sh 'helm upgrade --install backend ./helm/backend -n default -f helm/backend/values.yaml --force'
-                }
-                container('kubectl') {
                     sh 'kubectl rollout status deployment/backend -n default --timeout=120s'
                 }
             }
@@ -39,10 +45,8 @@ spec:
 
         stage('Deploy Frontend') {
             steps {
-                container('helm') {
+                container('deploy') {
                     sh 'helm upgrade --install frontend ./helm/frontend -n default -f helm/frontend/values.yaml'
-                }
-                container('kubectl') {
                     sh 'kubectl rollout status deployment/frontend -n default --timeout=120s'
                 }
             }
