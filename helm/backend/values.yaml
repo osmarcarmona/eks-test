@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: BACKEND_IMAGE_PLACEHOLDER
-  tag: latest
+  repository: 341738837637.dkr.ecr.us-west-2.amazonaws.com/app
+  tag: backend-latest
 
 service:
   type: ClusterIP
