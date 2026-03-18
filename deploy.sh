@@ -191,7 +191,7 @@ build_and_push_image() {
   local full_image="${repo_uri}:${name}-${IMAGE_TAG}"
 
   log_info "Starting: Build image $full_image"
-  if ! docker build -t "$full_image" "$context"; then
+  if ! docker build --platform linux/amd64 -t "$full_image" "$context"; then
     log_error "Docker build failed for $name."
     exit 1
   fi
