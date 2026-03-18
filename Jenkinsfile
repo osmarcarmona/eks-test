@@ -20,6 +20,12 @@ spec:
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/osmarcarmona/eks-test.git'
+            }
+        }
+
         stage('Deploy Backend') {
             steps {
                 container('helm') {
