@@ -146,12 +146,18 @@ extract_cdk_outputs() {
     exit 1
   }
 
+  TABLE_NAME=$(python3 -c "import json; print(json.load(open('$outputs_file'))['DynamoDbStack']['TableName'])" 2>/dev/null) || {
+    log_error "Failed to extract TableName from CDK outputs."
+    exit 1
+  }
+
   # Derive the ECR registry host from the repo URI
   ECR_REGISTRY="${REPO_URI%%/*}"
 
   log_info "Extracted ClusterName=$CLUSTER_NAME"
   log_info "Extracted RoleArn=$ROLE_ARN"
   log_info "Extracted RepoUri=$REPO_URI"
+  log_info "Extracted TableName=$TABLE_NAME"
 }
 
 configure_kubeconfig() {
@@ -245,7 +251,7 @@ install_jenkins() {
 # ---------------------------------------------------------------------------
 deploy_backend() {
   log_info "Starting: Backend Deploy"
-  if ! helm upgrade --install backend ./helm/backend -n default -f helm/backend/values.yaml --set serviceAccount.roleArn="$ROLE_ARN"; then
+  if ! helm upgrade --install backend ./helm/backend -n default -f helm/backend/values.yaml --set serviceAccount.roleArn="$ROLE_ARN" --set env.dynamodbTableName="$TABLE_NAME"; then
     log_error "Backend Helm deployment failed."
     exit 1
   fi

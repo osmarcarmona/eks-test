@@ -14,5 +14,10 @@ export class DynamoDbStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       encryption: dynamodb.TableEncryption.DEFAULT,
     });
+
+    new cdk.CfnOutput(this, 'TableName', {
+      value: this.table.tableName,
+      description: 'DynamoDB table name',
+    });
   }
 }

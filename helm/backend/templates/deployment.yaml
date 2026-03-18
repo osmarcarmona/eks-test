@@ -22,7 +22,7 @@ spec:
             - containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           env:
-            - name: DYNAMODB_TABLE_NAME
+            - name: TABLE_NAME
               value: {{ .Values.env.dynamodbTableName | quote }}
             - name: AWS_REGION
               value: {{ .Values.env.awsRegion | quote }}

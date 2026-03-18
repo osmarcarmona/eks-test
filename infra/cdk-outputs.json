@@ -6,12 +6,13 @@
     "ExportsOutputRefVpc8378EB38272D6E3A": "vpc-033b1c116da8523fe",
     "ExportsOutputRefVpcPublicSubnet1Subnet5C2D37C4FFA2B456": "subnet-01f114d22e5610317"
   },
-  "DynamoDbStack": {
-    "ExportsOutputFnGetAttTasksTable88911DC5ArnA683FDD2": "arn:aws:dynamodb:us-west-2:341738837637:table/DynamoDbStack-TasksTable88911DC5-12EM4JG3WCVRQ"
-  },
   "EcrStack": {
     "ExportsOutputFnGetAttAppRepoB478A890ArnD4F6FFCA": "arn:aws:ecr:us-west-2:341738837637:repository/app",
     "RepoUri": "341738837637.dkr.ecr.us-west-2.amazonaws.com/app"
+  },
+  "DynamoDbStack": {
+    "TableName": "DynamoDbStack-TasksTable88911DC5-12EM4JG3WCVRQ",
+    "ExportsOutputFnGetAttTasksTable88911DC5ArnA683FDD2": "arn:aws:dynamodb:us-west-2:341738837637:table/DynamoDbStack-TasksTable88911DC5-12EM4JG3WCVRQ"
   },
   "EksStack": {
     "BackendServiceAccountRoleArn": "arn:aws:iam::341738837637:role/EksStack-EksClusterBackendServiceAccountRoleBBC4889-zAcuPsNg22AL",

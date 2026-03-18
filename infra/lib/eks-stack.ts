@@ -33,7 +33,7 @@ export class EksStack extends cdk.Stack {
     });
 
     const nodeGroup = this.cluster.addNodegroupCapacity('ManagedNodeGroup', {
-      instanceTypes: [new ec2.InstanceType('t3.small')],
+      instanceTypes: [new ec2.InstanceType('t3.medium')],
       amiType: eks.NodegroupAmiType.AL2_X86_64,
       minSize: 1,
       maxSize: 1,
