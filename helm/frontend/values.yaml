@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: FRONTEND_IMAGE_PLACEHOLDER
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+  backendServiceName: backend-svc
+  backendServicePort: 80

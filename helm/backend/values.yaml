@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: BACKEND_IMAGE_PLACEHOLDER
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+env:
+  dynamodbTableName: ""
+  awsRegion: us-east-1
+
+serviceAccount:
+  create: true
+  name: backend-sa
+  roleArn: ""

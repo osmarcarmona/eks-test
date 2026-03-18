@@ -1,0 +1,21 @@
+{
+  "VpcStack": {
+    "ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3": "subnet-02975ea240b9962db",
+    "ExportsOutputRefVpcPublicSubnet2Subnet691E08A351552740": "subnet-0fa8c59b239934d37",
+    "ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940": "subnet-0f07b712929a46e57",
+    "ExportsOutputRefVpc8378EB38272D6E3A": "vpc-033b1c116da8523fe",
+    "ExportsOutputRefVpcPublicSubnet1Subnet5C2D37C4FFA2B456": "subnet-01f114d22e5610317"
+  },
+  "DynamoDbStack": {
+    "ExportsOutputFnGetAttTasksTable88911DC5ArnA683FDD2": "arn:aws:dynamodb:us-west-2:341738837637:table/DynamoDbStack-TasksTable88911DC5-12EM4JG3WCVRQ"
+  },
+  "EcrStack": {
+    "ExportsOutputFnGetAttAppRepoB478A890ArnD4F6FFCA": "arn:aws:ecr:us-west-2:341738837637:repository/app",
+    "RepoUri": "341738837637.dkr.ecr.us-west-2.amazonaws.com/app"
+  },
+  "EksStack": {
+    "BackendServiceAccountRoleArn": "arn:aws:iam::341738837637:role/EksStack-EksClusterBackendServiceAccountRoleBBC4889-zAcuPsNg22AL",
+    "ClusterName": "EksClusterFAB68BDB-d4b5c6b47ea64e36bcde49b817d5661e",
+    "KubeconfigCommand": "aws eks update-kubeconfig --name EksClusterFAB68BDB-d4b5c6b47ea64e36bcde49b817d5661e --region us-west-2"
+  }
+}
